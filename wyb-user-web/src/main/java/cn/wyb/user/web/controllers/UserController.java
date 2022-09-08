@@ -1,10 +1,9 @@
 package cn.wyb.user.web.controllers;
 
+import cn.wyb.user.api.common.Response;
 import cn.wyb.user.api.dto.User;
 import cn.wyb.user.api.feign.UserFeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +27,28 @@ public class UserController implements UserFeignClient {
 
 
     @Override
-    @GetMapping("/get/{userId}")
-    public User getUserById(@PathVariable("userId") Long userId) {
-        return users.get(userId);
+    @GetMapping("/{userId}")
+    public Response<User> getUserById(@PathVariable("userId") Long userId) {
+        return Response.<User>builder().code(0).msg("success").data(users.get(userId)).build();
+    }
+
+    @Override
+    @DeleteMapping("/{userId}")
+    public Response<Object> deleteUserById(Long userId) {
+        return Response.builder().code(0).msg("success").data(users.remove(userId)).build();
+    }
+
+    @Override
+    @PutMapping("/add")
+    public Response<User> add(@RequestBody User user) {
+        users.put(user.getId(),new User(user.getId(),user.getName()));
+        return Response.<User>builder().code(0).msg("success").data(users.get(user.getId())).build();
+    }
+
+    @Override
+    @PostMapping("/update")
+    public Response<User> update(@RequestBody User user) {
+        users.put(user.getId(),new User(user.getId(),user.getName()));
+        return Response.<User>builder().code(0).msg("success").data(users.get(user.getId())).build();
     }
 }

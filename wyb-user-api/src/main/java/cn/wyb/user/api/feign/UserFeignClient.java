@@ -1,12 +1,11 @@
 package cn.wyb.user.api.feign;
 
+import cn.wyb.user.api.common.Response;
 import cn.wyb.user.api.dto.User;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author admin
@@ -16,16 +15,49 @@ import org.springframework.web.bind.annotation.ResponseBody;
         fallbackFactory = UserFeignClient.UserFallbackFactory.class)
 public interface UserFeignClient {
 
-    @GetMapping("/get/{userId}")
+    @GetMapping("/{userId}")
     @ResponseBody
-    User getUserById(@PathVariable Long userId);
+    @PatchMapping
+    Response<User> getUserById(@PathVariable Long userId);
+
+    @DeleteMapping("/{userId}")
+    @ResponseBody
+    Response<Object> deleteUserById(@PathVariable Long userId);
+
+    @PutMapping("/add")
+    @ResponseBody
+    Response<User> add(@RequestBody User user);
+
+    @PostMapping("/update")
+    @ResponseBody
+    Response<User> update(@RequestBody User user);
 
     @Component
     class UserFallbackFactory implements FallbackFactory<UserFeignClient> {
 
         @Override
         public UserFeignClient create(Throwable cause) {
-            return userId -> null;
+            return new UserFeignClient() {
+                @Override
+                public Response<User> getUserById(Long userId) {
+                    return Response.<User>builder().build();
+                }
+
+                @Override
+                public Response<Object> deleteUserById(Long userId) {
+                    return Response.builder().build();
+                }
+
+                @Override
+                public Response<User> add(User user) {
+                    return Response.<User>builder().build();
+                }
+
+                @Override
+                public Response<User> update(User user) {
+                    return Response.<User>builder().build();
+                }
+            };
         }
     }
 }

@@ -1,5 +1,6 @@
 package cn.wyb.user.test.controllers;
 
+import cn.wyb.user.api.common.Response;
 import cn.wyb.user.api.dto.User;
 import cn.wyb.user.api.feign.UserFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,10 @@ public class TestController {
 
     @GetMapping("/get/{userId}")
     public User getUserById(@PathVariable("userId") Long userId) {
-        User userById = userFeignClient.getUserById(userId);
+        Response<User> userById = userFeignClient.getUserById(userId);
         if (userById == null) {
             return new User(1L, "haha");
         }
-        return userById;
+        return userById.getData();
     }
 }
